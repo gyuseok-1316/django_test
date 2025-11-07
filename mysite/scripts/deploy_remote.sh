@@ -17,7 +17,8 @@ if [ -d "$PROJECT_DIR/.git" ]; then
     git reset --hard origin/$BRANCH
 else
     echo "[INFO] Git repo NOT found. Cloning..."
-    rm -rf "$PROJECT_DIR/*"   # 혹시 잔여 파일 있는 경우 대비
+    rm -rf ${PROJECT_DIR}/*   # 혹시 잔여 파일 있는 경우 대비
+    rm -rf ${PROJECT_DIR}/.??*
     git clone -b $BRANCH "$REPO_URL" "$PROJECT_DIR"
     cd "$PROJECT_DIR"
 fi

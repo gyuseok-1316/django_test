@@ -1,27 +1,32 @@
 #!/bin/bash
 set -euo pipefail
 
-BASE_DIR=/home/vagrant/projects               # 프로젝트 묶음 루트
-PROJECT_DIR=${BASE_DIR}/django_test           # 실제 레포가 위치할 폴더
+# 실제 배포되는 디렉토리
+PROJECT_DIR=/home/vagrant/projects/mysite
+
+# GitHub repository
 REPO_URL=https://github.com/gyuseok-1316/django_test.git
 BRANCH=main
 
-# 1) 디렉토리 준비
-mkdir -p ${BASE_DIR}
+echo "[INFO] Deploying to: ${PROJECT_DIR}"
 
+# 1) 프로젝트 디렉토리 준비
+mkdir -p ${PROJECT_DIR}
+
+# 2) clone 또는 pull
 if [ -d "${PROJECT_DIR}/.git" ]; then
-    echo "[INFO] Git repo exists. Pulling changes..."
+    echo "[INFO] Existing Git repo found. Pulling latest changes..."
     cd "${PROJECT_DIR}"
     git fetch origin
-    git reset --hard origin/$BRANCH
+    git reset --hard origin/${BRANCH}
 else
     echo "[INFO] Git repo NOT found. Cloning fresh..."
     rm -rf "${PROJECT_DIR}"
-    git clone -b $BRANCH "$REPO_URL" "$PROJECT_DIR"
+    git clone -b ${BRANCH} "${REPO_URL}" "${PROJECT_DIR}"
     cd "${PROJECT_DIR}"
 fi
 
-# 2) 가상환경 준비
+# 3) 가상환경 준비
 cd "${PROJECT_DIR}"
 python3 -m venv venv || true
 source venv/bin/activate
@@ -29,16 +34,16 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# 3) 장고 작업
-python3 manage.py migrate --noinput
-python3 manage.py makemigrations --noinput
+# 4) Django 작업
+python3 manage.py makemigrations --noinput || true
 python3 manage.py migrate --noinput
 python3 manage.py collectstatic --noinput
 
-# 4) 기존 runserver 종료
+# 5) 기존 runserver 종료
 pkill -f "manage.py runserver" || true
 
-# 5) runserver 백그라운드 실행
-nohup python3 manage.py runserver 0.0.0.0:8000 > /var/log/pybo_run.log 2>&1 &
+# 6) runserver 재시작
+nohup python3 manage.py runserver 0.0.0.0:8000 > /var/log/mysite_run.log 2>&1 &
 
 echo "DEPLOY_OK $(date)"
+

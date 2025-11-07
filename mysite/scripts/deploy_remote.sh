@@ -10,11 +10,11 @@ mkdir -p ${PROJECT_DIR}
 cd ${PROJECT_DIR}
 
 # 2) 레포가 없으면 clone, 있으면 reset to remote
-if [ -d "$DIR.git" ]; then
+if [ -d "${PROJECT_DIR}.git" ]; then
   git pull origin main
 else
-  git clone https://github.com/gyuseok-1316/django_test.git "$DIR"
-  cd "$DIR"
+  git clone https://github.com/gyuseok-1316/django_test.git "$PROJECT_DIR"
+  cd "${PROJECT_DIR}"
 fi
 
 # 3) 가상환경 준비

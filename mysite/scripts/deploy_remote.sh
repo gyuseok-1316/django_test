@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # 실제 배포되는 디렉토리
-PROJECT_DIR=/home/vagrant/projects/mysite
+PROJECT_DIR=/home/vagrant/projects/
 
 # GitHub repository
 REPO_URL=https://github.com/gyuseok-1316/django_test.git
